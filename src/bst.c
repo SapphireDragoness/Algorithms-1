@@ -390,7 +390,6 @@ int upo_bst_is_bst(const upo_bst_t tree, const void *min_key, const void *max_ke
     return upo_bst_is_bst_impl(tree->root, min_key, 0, max_key, 0, tree->key_cmp);
 }
 
-
 /**** EXERCISE #2 - END of EXTRA OPERATIONS ****/
 
 
