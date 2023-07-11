@@ -17,10 +17,11 @@ void dump_array(const void *base, size_t num_elem, size_t elem_size, void (*dump
     assert( base != NULL );
     assert( fp != NULL );
 
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    const unsigned char *pc = base;
+
+    for(size_t i = 0; i < num_elem; i++) {
+        dump_element(pc+elem_size*i, fp);
+    }
 }
 
 void dump_int(const void *p, FILE *fp)
@@ -28,10 +29,9 @@ void dump_int(const void *p, FILE *fp)
     assert( p != NULL );
     assert( fp != NULL );
 
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    const int *value = p;
+    
+    fprintf(fp, "%d", *value);
 }
 
 void dump_string(const void *p, FILE *fp)
@@ -39,10 +39,9 @@ void dump_string(const void *p, FILE *fp)
     assert( p != NULL );
     assert( fp != NULL );
 
-    /* TO STUDENTS:
-     *  Remove the following two lines and put here your implementation. */
-    fprintf(stderr, "To be implemented!\n");
-    abort();
+    const char *string = *(char**)p;
+
+    fprintf(fp, "%s", string);
 }
 
 int main()
