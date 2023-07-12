@@ -98,4 +98,14 @@ static void upo_bst_keys_impl(const upo_bst_node_t *node, upo_bst_comparator_t k
 
 static int upo_bst_is_bst_impl(const upo_bst_node_t *node, const void *min_key, int min_key_changed, const void *max_key, int max_key_changed, upo_bst_comparator_t key_cmp);
 
+static size_t upo_bst_rank_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp);
+
+static void *upo_bst_predecessor_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp);
+
+static void *upo_bst_get_value_depth_impl(upo_bst_node_t *node, const void *key, long *depth, upo_bst_comparator_t cmp);
+
+static void upo_bst_keys_le_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp, upo_bst_key_list_t *list);
+
+static size_t upo_bst_subtree_count_leaves_depth_impl(upo_bst_node_t *node, const void *key, size_t leaves_depth, size_t current_depth, int subtree_found, upo_bst_comparator_t cmp);
+
 #endif /* UPO_BST_PRIVATE_H */

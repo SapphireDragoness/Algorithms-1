@@ -392,6 +392,98 @@ int upo_bst_is_bst(const upo_bst_t tree, const void *min_key, const void *max_ke
 
 /**** EXERCISE #2 - END of EXTRA OPERATIONS ****/
 
+/**** EXERCISE #3 - BEGIN of ADDITIONAL OPERATIONS ****/
+
+size_t upo_bst_rank_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp) {
+    if(node == NULL) return 0;
+    if(cmp(key, node->key) <= 0) return upo_bst_rank_impl(node->left, key, cmp);
+    else return 1 + upo_bst_rank_impl(node->left, key, cmp) + upo_bst_rank_impl(node->right, key, cmp);
+}
+
+size_t upo_bst_rank(const upo_bst_t bst, const void *key) {
+    if(bst == NULL || upo_bst_is_empty(bst)) return 0;
+    return upo_bst_rank_impl(bst->root, key, bst->key_cmp);
+}
+
+void *upo_bst_predecessor_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp) {
+    if(node == NULL) return NULL;
+    if(cmp(key, node->key) <= 0) return upo_bst_predecessor_impl(node->left, key, cmp);
+    upo_bst_node_t *pred = upo_bst_predecessor_impl(node->right, key, cmp);
+    return (pred != NULL) ? pred : node->key;
+}
+
+void *upo_bst_predecessor(const upo_bst_t bst, const void* key) {
+    if(bst == NULL || upo_bst_is_empty(bst)) return NULL;
+    return upo_bst_predecessor_impl(bst->root, key, bst->key_cmp);
+}
+
+void *upo_bst_get_value_depth_impl(upo_bst_node_t *node, const void *key, long *depth, upo_bst_comparator_t cmp) {
+    if(node == NULL) {
+        *depth = -1;
+        return NULL;
+    }
+    *depth += 1;    
+    if(cmp(key, node->key) < 0) {
+        return upo_bst_get_value_depth_impl(node->left, key, depth, cmp);
+    }
+    else if(cmp(key, node->key) > 0) {
+        return upo_bst_get_value_depth_impl(node->right, key, depth, cmp);
+    }
+    else
+        return node->key;
+}
+
+void *upo_bst_get_value_depth(const upo_bst_t bst, const void *key, long *depth) {
+    *depth = -1;
+    if(bst == NULL || upo_bst_is_empty(bst)) {
+        return NULL;
+    }
+    return upo_bst_get_value_depth_impl(bst->root, key, depth, bst->key_cmp);
+}
+
+void upo_bst_keys_le_impl(upo_bst_node_t *node, const void *key, upo_bst_comparator_t cmp, upo_bst_key_list_t *list) {
+    if(node == NULL) return;
+    if(cmp(node->key, key) <= 0) {
+        upo_bst_key_list_node_t *list_node = malloc(sizeof(upo_bst_key_list_node_t));
+        if(list_node == NULL) {
+            perror("Malloc failed.");
+            abort();
+        }
+        list_node->key = node->key;
+        list_node->next = *list;
+        *list = list_node;
+        upo_bst_keys_le_impl(node->right, key, cmp, list);
+    }
+    upo_bst_keys_le_impl(node->left, key, cmp, list);
+}
+
+upo_bst_key_list_t upo_bst_keys_le(const upo_bst_t bst, const void *key) {
+    if(bst == NULL || upo_bst_is_empty(bst)) return NULL;
+    upo_bst_key_list_t list = NULL;
+    upo_bst_keys_le_impl(bst->root, key, bst->key_cmp, &list);
+    return list;
+}
+
+size_t upo_bst_subtree_count_leaves_depth_impl(upo_bst_node_t *node, const void *key, size_t leaves_depth, size_t current_depth, int subtree_found, upo_bst_comparator_t cmp) {
+    if(node == NULL) return 0;
+    if(current_depth > leaves_depth) return 0;
+    if(subtree_found) {
+        if(upo_bst_is_leaf_impl(node) && current_depth == leaves_depth) return 1;
+        return upo_bst_subtree_count_leaves_depth_impl(node->left, key, leaves_depth, current_depth+1, subtree_found, cmp) + upo_bst_subtree_count_leaves_depth_impl(node->right, key, leaves_depth, current_depth+1, subtree_found, cmp);
+    }
+    else {
+        if(cmp(key, node->key) > 0) return upo_bst_subtree_count_leaves_depth_impl(node->right, key, leaves_depth, current_depth+1, subtree_found, cmp);
+        else if(cmp(key, node->key) < 0 ) return upo_bst_subtree_count_leaves_depth_impl(node->left, key, leaves_depth, current_depth+1, subtree_found, cmp);
+        return upo_bst_subtree_count_leaves_depth_impl(node->left, key, leaves_depth, current_depth+1, 1, cmp);
+    }
+}
+
+size_t upo_bst_subtree_count_leaves_depth(const upo_bst_t bst, const void *key, size_t d) {
+    if(bst == NULL || upo_bst_is_empty(bst)) return 0;
+    return upo_bst_subtree_count_leaves_depth_impl(bst->root, key, d, 0, 0, bst->key_cmp);
+}
+
+/**** EXERCISE #3 - END of ADDITIONAL OPERATIONS ****/
 
 upo_bst_comparator_t upo_bst_get_comparator(const upo_bst_t tree)
 {

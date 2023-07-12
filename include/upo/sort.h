@@ -91,5 +91,36 @@ void upo_merge_sort(void *base, size_t n, size_t size, upo_sort_comparator_t cmp
  */
 void upo_quick_sort(void *base, size_t n, size_t size, upo_sort_comparator_t cmp);
 
+/**
+ * \brief Sorts the given array according to the bubble sort algorithm.
+ *
+ * \param base Pointer to the start of the input array.
+ * \param n Number of elements in the input array.
+ * \param size The size (in bytes) of each element of the array.
+ * \param cmp Pointer to the comparison function used to sort the array in
+ *  ascending order.
+ *  The comparison function is called with two arguments that point to the
+ *  objects being compared and must return an interger less than, equal to, or
+ *  greater than zero if the first argument is considered to be respectively
+ *  less than, equal to, or greater than the second.
+ *
+ * The time complexity of insertion sort is \f$\Theta(n^2)\f$ in the worst case.
+ */
+void upo_bubble_sort(void *base, size_t n, size_t size, upo_sort_comparator_t cmp);
+
+/**
+ * \brief Sorts the given array according to the quick sort algorithm.
+ *
+ * \param base Pointer to the start of the input array.
+ * \param n Number of elements in the input array.
+ * \param size The size (in bytes) of each element of the array.
+ * \param cmp Pointer to the comparison function used to sort the array in
+ *  ascending order.
+ *  The comparison function is called with two arguments that point to the
+ *  objects being compared and must return an interger less than, equal to, or
+ *  greater than zero if the first argument is considered to be respectively
+ *  less than, equal to, or greater than the second.
+ */
+void upo_quick_sort_median3_cutoff(void *base, size_t n, size_t size, upo_sort_comparator_t cmp);
 
 #endif /* UPO_SORT_H */

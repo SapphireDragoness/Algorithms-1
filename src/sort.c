@@ -32,8 +32,8 @@ void upo_insertion_sort(void *base, size_t n, size_t size, upo_sort_comparator_t
     unsigned char *bp = base;
     for(size_t i = 1; i < n; i++){
         size_t j = i;
-        while((j > 0) && cmp(bp+j*size, bp+j*size-size) < 0) {
-            upo_swap(bp+j*size, bp+j*size-size, size);
+        while((j > 0) && cmp(bp+j*size, bp+(j-1)*size) < 0) {
+            upo_swap(bp+j*size, bp+(j-1)*size, size);
             j--;
         }
     }
@@ -113,6 +113,58 @@ size_t upo_partition(void *base, size_t lo, size_t hi, size_t size, upo_sort_com
     }
     upo_swap(bp+p*size, bp+j*size, size);
     return j;
+}
+
+void upo_bubble_sort(void *base, size_t n, size_t size, upo_sort_comparator_t cmp) {
+    unsigned char *pc = base;
+    int swapped = 1;
+
+    for(size_t i = 0; i < n && swapped; i++) {
+        swapped = 0;
+        for(size_t j = 0; j < n-1; j++) {
+            if(cmp(pc+j*size, pc+(j+1)*size) > 0)  {
+                upo_swap(pc+j*size, pc+(j+1)*size, size);
+                swapped = 1;
+            }
+        }
+    }
+}
+
+void upo_quick_sort_median3_cutoff(void *base, size_t n, size_t size, upo_sort_comparator_t cmp) {
+    upo_quick_sort_median3_cutoff_rec(base, 0, n-1, size, cmp);
+}
+
+void upo_quick_sort_median3_cutoff_rec(void *base, size_t lo, size_t hi, size_t size, upo_sort_comparator_t cmp) {
+    if(lo >= hi) return;
+    if(hi-lo+1 <= 10) {
+        upo_insertion_sort((unsigned char*) base + lo*size, hi-lo+1, size, cmp);
+        return;
+    }
+    size_t j = upo_partition_median3(base, lo, hi, size, cmp);
+    if(j > 0) upo_quick_sort_median3_cutoff_rec(base, lo, j-1, size, cmp);
+    upo_quick_sort_median3_cutoff_rec(base, j+1, hi, size, cmp);
+}
+
+size_t upo_partition_median3(void *base, size_t lo, size_t hi, size_t size, upo_sort_comparator_t cmp) {
+    size_t mid = lo+(hi-lo)/2;
+    unsigned char *ptr = base;
+    unsigned char *lo_ptr = ptr+lo*size;
+    unsigned char *mid_ptr = ptr+mid*size;
+    unsigned char *hi_ptr = ptr+hi*size;
+    if(cmp(lo_ptr, mid_ptr) > 0) {
+        upo_swap(lo_ptr, mid_ptr, size);
+    }
+    if(cmp(lo_ptr, hi_ptr) > 0) {
+        upo_swap(lo_ptr, hi_ptr, size);
+    }
+    if(cmp(mid_ptr, hi_ptr) > 0) {
+        upo_swap(mid_ptr, hi_ptr, size);
+    }
+    if((hi-lo+1) <= 3) {
+        return mid;
+    }
+    upo_swap(mid_ptr, ptr+(lo+1)*size, size);
+    return upo_partition(base, lo+1, hi-1, size, cmp);
 }
 
 void upo_swap(void *pv1, void *pv2, size_t n) {

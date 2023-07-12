@@ -85,17 +85,15 @@ void* upo_stack_top(const upo_stack_t stack)
 int upo_stack_is_empty(const upo_stack_t stack)
 {   
     if(stack == NULL) {
-        perror("Stack is null.\n");
-        abort();
+        return 1;
     }
     return stack -> size == 0 ? 1 : 0;
 }
 
 size_t upo_stack_size(const upo_stack_t stack)
 {
-    if(stack == NULL) {
-        perror("Stack is null.\n");
-        abort();
+    if(stack == NULL || upo_stack_is_empty(stack)) {
+        return 0;
     }
     return stack -> size;
 }
@@ -111,7 +109,13 @@ void upo_stack_clear(upo_stack_t stack, int destroy_data)
      * 2. Update stack size.
      */
     while(!upo_stack_is_empty(stack)) {
-        upo_stack_pop(stack, destroy_data);
+        upo_stack_node_t *node = stack->top;
+        stack->top = stack->top->next;
+        if(destroy_data) {
+            free(node->data);
+        }
+        free(node);
+        stack->size -= 1;
     }
 }
 

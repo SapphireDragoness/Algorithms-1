@@ -625,7 +625,7 @@ upo_ht_key_list_t upo_ht_linprob_keys(const upo_ht_linprob_t ht)
 
 void upo_ht_linprob_traverse(const upo_ht_linprob_t ht, upo_ht_visitor_t visit, void *visit_context)
 {
-    if(ht == NULL) return NULL;
+    if(ht == NULL) return;
 
     if(!upo_ht_linprob_is_empty(ht)) {
         for(size_t i = 0; i < ht->capacity; i++) {

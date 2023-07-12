@@ -843,6 +843,167 @@ void test_bst_property()
     upo_bst_destroy(bst, 0);
 }
 
+void test_rank()
+{
+    int keys[] = {8, 3, 1, 6, 4, 7, 10, 14, 13};
+    int values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+    int test_keys[] = {8, 1, 13, 14, 0, 5, 12, 100};
+    size_t expected_values[] = {5, 0, 7, 8, 0, 3, 7, 9};
+
+    upo_bst_t bst = upo_bst_create(int_compare);
+
+    assert(bst != NULL);
+
+    // BST with no nodes
+
+    size_t value = upo_bst_rank(bst, &keys[0]);
+
+    assert(value == 0);
+
+    // Filling BST
+
+    size_t n = sizeof(keys) / sizeof(int);
+    for (size_t i = 0; i < n; i++)
+        upo_bst_insert(bst, &keys[i], &values[i]);
+
+    size_t test_n = sizeof(test_keys) / sizeof(int);
+    for (size_t i = 0; i < test_n; i++)
+        assert(upo_bst_rank(bst, &test_keys[i]) == expected_values[i]);
+
+    upo_bst_destroy(bst, 0);
+}
+
+void test_predecessor()
+{
+    int keys[] = {8, 3, 1, 6, 4, 7, 10, 14, 13};
+    int values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+    int test_keys[] = {8, 1, 13, 12, 0, 100};
+    int expected_values[] = {7, 0, 10, 10, 0, 14};
+
+    upo_bst_t bst = upo_bst_create(int_compare);
+
+    assert(bst != NULL);
+
+    // BST with no nodes
+
+    void *value = upo_bst_predecessor(bst, &test_keys[0]);
+
+    assert(value == NULL);
+
+    // Filling BST
+
+    size_t n = sizeof(keys) / sizeof(int);
+    for (size_t i = 0; i < n; i++)
+        upo_bst_insert(bst, &keys[i], &values[i]);
+
+    size_t test_n = sizeof(test_keys) / sizeof(int);
+    for (size_t i = 0; i < test_n; i++)
+    {
+        int *key = (int *)upo_bst_predecessor(bst, &test_keys[i]);
+        if (i == 1 || i == 4)
+            assert(key == NULL);
+        else
+            assert(*key == expected_values[i]);
+    }
+
+    upo_bst_destroy(bst, 0);
+}
+
+void test_depth()
+{
+    int keys[] = {8, 3, 1, 6, 4, 7, 10, 14, 13};
+    int values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+    int test_keys[] = {8, 1, 13, 12, 0, 100};
+    int expected_depths[] = {0, 2, 3, -1, -1, -1};
+    int expected_keys[] = {8, 1, 13};
+
+    upo_bst_t bst = upo_bst_create(int_compare);
+
+    assert(bst != NULL);
+
+    // BST with no nodes
+    long test_depth = 0;
+
+    void *value = upo_bst_get_value_depth(bst, &test_keys[0], &test_depth);
+
+    assert(value == NULL);
+    assert(test_depth == -1);
+
+    // Filling BST
+
+    size_t n = sizeof(keys) / sizeof(int);
+    for (size_t i = 0; i < n; i++)
+        upo_bst_insert(bst, &keys[i], &values[i]);
+
+    size_t test_n = sizeof(test_keys) / sizeof(int);
+    for (size_t i = 0; i < test_n; i++)
+    {
+        int *key = (int *)upo_bst_get_value_depth(bst, &test_keys[i], &test_depth);
+        if (i < 3)
+        {
+            assert(*key == expected_keys[i]);
+            assert(test_depth == expected_depths[i]);
+        }
+        else
+        {
+            assert(key == NULL);
+            assert(test_depth == expected_depths[i]);
+        }
+    }
+
+    upo_bst_destroy(bst, 0);
+}
+
+void test_keys_le()
+{
+    int keys[] = {8, 3, 1, 6, 4, 7, 10, 14, 13};
+    int values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+    int test_keys[] = {8, 1, 14, 0, 5, 100};
+
+    upo_bst_t bst = upo_bst_create(int_compare);
+    upo_bst_key_list_t key_list = NULL;
+    size_t n = sizeof(keys) / sizeof(int);
+
+    assert(bst != NULL);
+
+    /* BST: empty tree */
+    key_list = upo_bst_keys_le(bst, &keys[0]);
+    assert(key_list == NULL);
+
+    for (size_t i = 0; i < n; i++)
+    {
+        upo_bst_insert(bst, &keys[i], &values[i]);
+    }
+
+    size_t test_n = sizeof(test_keys) / sizeof(int);
+    for (size_t i = 0; i < test_n; i++)
+    {
+        // Check the returned list
+        key_list = upo_bst_keys_le(bst, &test_keys[i]);
+        if (i == 3)
+            assert(key_list == NULL);
+        else
+            assert(check_key_list(key_list, keys, n, INT_MIN, test_keys[i]));
+
+        // Free the list
+        while (key_list != NULL)
+        {
+            upo_bst_key_list_t old_list = key_list;
+            key_list = key_list->next;
+            free(old_list);
+        }
+        key_list = NULL;
+    }
+
+    upo_bst_clear(bst, 0);
+
+    upo_bst_destroy(bst, 0);
+}
+
 
 int main()
 {
@@ -870,6 +1031,28 @@ int main()
     fflush(stdout);
     test_bst_property();
     printf("OK\n");
+
+    printf("Test case 'key rank'... ");
+    fflush(stdout);
+    test_rank();
+    printf("OK\n");
+
+    printf("Test case 'predecessor'... ");
+    fflush(stdout);
+    test_predecessor();
+    printf("OK\n");
+
+    printf("Test case 'get & depth'... ");
+    fflush(stdout);
+    test_depth();
+    printf("OK\n");
+
+    printf("Test case 'keys less'... ");
+    fflush(stdout);
+    test_keys_le();
+    printf("OK\n");
+
+    //TODO add test for upo_bst_subtree_count_leaves_depth()
 
     return 0;
 }

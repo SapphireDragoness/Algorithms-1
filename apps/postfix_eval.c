@@ -40,11 +40,7 @@
 
 int eval_postfix(const char *expr, long *res)
 {
-    upo_stack_t stack = upo_stack_create();
-    for(size_t i = 0; expr[i] != '\0'; i++) {
-        
-    }
-    return *res;
+    //TODO
 }
 
 void eval_lines(FILE *fp)
