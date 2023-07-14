@@ -104,4 +104,7 @@ static void upo_ht_linprob_resize(upo_ht_linprob_t ht, size_t n);
 /*** END of HASH TABLE with LINEAR PROBING ***/
 
 
+typedef struct upo_ht_sepchain_olist_s* upo_ht_sepchain_olist_t;
+
+
 #endif /* UPO_HASHTABLE_PRIVATE_H */

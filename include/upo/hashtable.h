@@ -514,6 +514,53 @@ upo_ht_hasher_t upo_ht_linprob_get_hasher(const upo_ht_linprob_t ht);
 /*** END of HASH TABLE with OPEN ADDRESSING ***/
 
 
+/*** BEGIN of HASH TABLE with SEPARATE CHAINING and ORDERED LISTS ***/
+
+
+/** \brief The hash table with separate chaining (based on ordered linked lists) abstract data type. */
+typedef struct upo_ht_sepchain_olist_s* upo_ht_sepchain_olist_t;
+
+/** \brief Creates a new hash table with separate chaining (based on ordered linked lists). */
+upo_ht_sepchain_olist_t upo_ht_sepchain_olist_create(size_t m, upo_ht_hasher_t key_hash, upo_ht_comparator_t key_cmp);
+
+/** \brief Destroys the given hash table with separate chaining (based on ordered linked lists). */
+void upo_ht_sepchain_olist_destroy(upo_ht_sepchain_olist_t ht, int destroy_data);
+
+/** \brief Removes all elements from the given hash table with separate chaining (based on ordered linked lists). */
+void upo_ht_sepchain_olist_clear(upo_ht_sepchain_olist_t ht, int destroy_data);
+
+/** \brief Returns value associated to the given key in the given hash table with separate chaining (based on ordered linked lists). */
+void* upo_ht_sepchain_olist_get(const upo_ht_sepchain_olist_t ht, const void *key);
+
+/** \brief Tells whether the given key is present in the given hash table with separate chaining (based on ordered linked lists). */
+int upo_ht_sepchain_olist_contains(const upo_ht_sepchain_olist_t ht, const void *key);
+
+/** \brief Inserts/updates the given key-value pair into the given hash table with separate chaining (based on ordered linked lists). */
+void* upo_ht_sepchain_olist_put(upo_ht_sepchain_olist_t ht, void *key, void *value);
+
+/** \brief Inserts the given key-value pair into the given hash table with separate chaining (based on ordered linked lists); updates are ignored. */
+void upo_ht_sepchain_olist_insert(upo_ht_sepchain_olist_t ht, void *key, void *value);
+
+/** \brief Removes the key-value pair associated to the given key from the given hash table with separate chaining (based on ordered linked lists). */
+void upo_ht_sepchain_olist_delete(upo_ht_sepchain_olist_t ht, const void *key, int destroy_data);
+
+/** \brief Returns the capacity of the given hash table with separate chaining (based on ordered linked lists). */
+size_t upo_ht_sepchain_olist_capacity(const upo_ht_sepchain_olist_t ht);
+
+/** \brief Returns the number of stored keys in the given hash table with separate chaining (based on ordered linked lists). */
+size_t upo_ht_sepchain_olist_size(const upo_ht_sepchain_olist_t ht);
+
+/** \brief Returns the load factor of the given hash table with separate chaining (based on ordered linked lists). */
+double upo_ht_sepchain_olist_load_factor(const upo_ht_sepchain_olist_t ht);
+
+/** \brief Tells whether the given hash table with separate chaining (based on ordered linked lists) is empty. */
+int upo_ht_sepchain_olist_is_empty(const upo_ht_sepchain_olist_t ht);
+
+
+/*** END of HASH TABLE with SEPARATE CHAINING and ORDERED LISTS ***/
+
+
+
 /*** BEGIN of HASH FUNCTIONS ***/
 
 

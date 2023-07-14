@@ -640,6 +640,61 @@ void upo_ht_linprob_traverse(const upo_ht_linprob_t ht, upo_ht_visitor_t visit, 
 /*** EXERCISE #3 - END of HASH TABLE - EXTRA OPERATIONS ***/
 
 
+/*** END of HASH TABLE with SEPARATE CHAINING and ORDERED LISTS ***/
+
+
+upo_ht_sepchain_olist_t upo_ht_sepchain_olist_create(size_t m, upo_ht_hasher_t key_hash, upo_ht_comparator_t key_cmp);
+
+void upo_ht_sepchain_olist_destroy(upo_ht_sepchain_olist_t ht, int destroy_data);
+
+void upo_ht_sepchain_olist_clear(upo_ht_sepchain_olist_t ht, int destroy_data);
+
+void* upo_ht_sepchain_olist_get(const upo_ht_sepchain_olist_t ht, const void *key);
+
+int upo_ht_sepchain_olist_contains(const upo_ht_sepchain_olist_t ht, const void *key);
+
+void* upo_ht_sepchain_olist_put(upo_ht_sepchain_olist_t ht, void *key, void *value) {
+    if(ht == NULL || upo_ht_sepchain_olist_is_empty(ht)) return NULL;
+
+    void *old_value = NULL;
+    upo_ht_hasher_t hasher = ht->key_hash;
+    size_t hash = hasher(key, ht->capacity);
+    upo_ht_sepchain_list_node_t *node = NULL;
+    node = ht->slots[hash].head;
+    upo_ht_comparator_t cmp = ht->key_cmp;
+
+    while(node != NULL && cmp(key, node->key) < 0) node = node->next;
+    if(node == NULL) {
+        node = malloc(sizeof(upo_ht_sepchain_list_node_t));
+        node->key = key;
+        node->value = value;
+        node->next = ht->slots[hash].head;
+        ht->slots[hash].head = node;
+    }
+    else {
+        old_value = node->value;
+        node->value = value;
+    }
+
+    return old_value;
+}
+
+void upo_ht_sepchain_olist_insert(upo_ht_sepchain_olist_t ht, void *key, void *value);
+
+void upo_ht_sepchain_olist_delete(upo_ht_sepchain_olist_t ht, const void *key, int destroy_data);
+
+size_t upo_ht_sepchain_olist_capacity(const upo_ht_sepchain_olist_t ht);
+
+size_t upo_ht_sepchain_olist_size(const upo_ht_sepchain_olist_t ht);
+
+double upo_ht_sepchain_olist_load_factor(const upo_ht_sepchain_olist_t ht);
+
+int upo_ht_sepchain_olist_is_empty(const upo_ht_sepchain_olist_t ht);
+
+
+/*** END of HASH TABLE with SEPARATE CHAINING and ORDERED LISTS ***/
+
+
 /*** BEGIN of HASH FUNCTIONS ***/
 
 
